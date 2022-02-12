@@ -1,9 +1,8 @@
 // Calling the same request multiple times ?
 // There's a solution.
 
-import React, { useRef } from "react";
 
-const lastPageRef = useRef("");
+let lastURLRef = "";
 const verifyRepeatedURL = ({ url, params }) =>
   new Promise((resolve, reject) => {
     try {
@@ -23,16 +22,19 @@ const verifyRepeatedURL = ({ url, params }) =>
 
       const newURL = serialiseUrl();
 
-      if (newURL === lastPageRef?.current) {
+      if (newURL === lastURLRef) {
         resolve(true);
       }
 
-      lastPageRef.current = newURL;
+      lastURLRef = newURL;
       resolve(false);
     } catch {
       reject(false);
     }
   });
+
+// This function block multiple Request to the same endpoint.
+// Don't repeat the same action repeated times.
 
 export const requestInterceptTakeLatest = async (callAPi, url, params = null) => {
   const isRepeated = await verifyRepeatedURL({ url, params });
